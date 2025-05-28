@@ -156,14 +156,14 @@ Vastaa VAIN kelvollisella JSON:lla tässä tarkkassa muodossa:
           : "Yhteenvedon luominen epäonnistui",
       keyPoints: Array.isArray(parsed.keyPoints)
         ? parsed.keyPoints
-            .filter((item) => typeof item === "string" && item.trim())
-            .map((item) => item.trim())
+            .filter((item: unknown) => typeof item === "string" && item.trim())
+            .map((item: string) => item.trim())
             .slice(0, 6)
         : ["Tärkeimpien asioiden luominen epäonnistui"],
       actionItems: Array.isArray(parsed.actionItems)
         ? parsed.actionItems
-            .filter((item) => typeof item === "string" && item.trim())
-            .map((item) => item.trim())
+            .filter((item: unknown) => typeof item === "string" && item.trim())
+            .map((item: string) => item.trim())
             .slice(0, 6)
         : ["Toimenpiteiden luominen epäonnistui"],
       responseTemplate:
@@ -172,17 +172,27 @@ Vastaa VAIN kelvollisella JSON:lla tässä tarkkassa muodossa:
           : undefined,
       deadlines: Array.isArray(parsed.deadlines)
         ? parsed.deadlines
-            .filter((item) => item && typeof item === "object" && item.task && item.person && item.deadline)
-            .map((item) => ({
-              ...item,
+            .filter(
+              (item: unknown) =>
+                item &&
+                typeof item === "object" &&
+                item !== null &&
+                typeof (item as any).task === "string" &&
+                typeof (item as any).person === "string" &&
+                typeof (item as any).deadline === "string",
+            )
+            .map((item: any) => ({
+              task: item.task,
+              person: item.person,
+              deadline: item.deadline,
               priority: item.priority || "medium",
             }))
             .slice(0, 5)
         : undefined,
       pendingDecisions: Array.isArray(parsed.pendingDecisions)
         ? parsed.pendingDecisions
-            .filter((item) => typeof item === "string" && item.trim())
-            .map((item) => item.trim())
+            .filter((item: unknown) => typeof item === "string" && item.trim())
+            .map((item: string) => item.trim())
             .slice(0, 4)
         : undefined,
     }
